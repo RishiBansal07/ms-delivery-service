@@ -1,0 +1,50 @@
+Error creating bean with name 'com.delivery.project.configuration.feignClient.ShippingOrderClient': FactoryBean threw exception on object creation
+
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@EnableFeignClients(basePackages = "com.delivery.project.configuration.feignClient")
+public class FeignClientConfig {
+    // Additional configuration if needed
+}
+
+
+The bean 'shipping-order-service.FeignClientSpecification' could not be registered. A bean with that name has already been defined and overriding is disabled.
+
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'deliveryController' defined in file [/Users/rishibansal/Downloads/ms-delivery-service/target/classes/com/delivery/project/controller/DeliveryController.class]: Unsatisfied dependency expressed through constructor parameter 2: Error creating bean with name 'com.delivery.project.configuration.feignClient.ShippingOrderClient': FactoryBean threw exception on object creation
+
+fetch-  b4bd6ded-4ab2-4882-995c-462791a89023 from /shippingOrders/b4bd6ded-4ab2-4882-995c-462791a89023 string in java 17
+
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class UUIDExtractor {
+
+    public static void main(String[] args) {
+        String inputString = "/shippingOrders/b4bd6ded-4ab2-4882-995c-462791a89023";
+
+        String uuid = extractUUID(inputString);
+
+        if (uuid != null) {
+            System.out.println("Extracted UUID: " + uuid);
+        } else {
+            System.out.println("No UUID found in the input string.");
+        }
+    }
+
+    private static String extractUUID(String input) {
+        // Define a regex pattern for matching UUIDs
+        Pattern pattern = Pattern.compile("/shippingOrders/([a-fA-F0-9\\-]+)");
+        Matcher matcher = pattern.matcher(input);
+
+        // Check if the pattern matches the input string
+        if (matcher.find()) {
+            // Group 1 in the matcher contains the UUID
+            return matcher.group(1);
+        }
+
+        return null; // Return null if no UUID is found
+    }
+}
