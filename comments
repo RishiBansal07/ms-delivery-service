@@ -11,3 +11,5 @@ public class FeignClientConfig {
 
 
 The bean 'shipping-order-service.FeignClientSpecification' could not be registered. A bean with that name has already been defined and overriding is disabled.
+
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'deliveryController' defined in file [/Users/rishibansal/Downloads/ms-delivery-service/target/classes/com/delivery/project/controller/DeliveryController.class]: Unsatisfied dependency expressed through constructor parameter 2: Error creating bean with name 'com.delivery.project.configuration.feignClient.ShippingOrderClient': FactoryBean threw exception on object creation
