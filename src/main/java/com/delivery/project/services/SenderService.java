@@ -5,4 +5,7 @@ import com.delivery.project.entity.SenderDetails;
 
 public interface SenderService {
     SenderDetails searchByEmployeeId(String id);
+
+    String updateOrderId(String employeeIdSender, String orderId);
+
 }

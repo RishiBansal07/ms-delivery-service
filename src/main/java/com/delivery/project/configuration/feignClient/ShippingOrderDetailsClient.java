@@ -1,11 +1,12 @@
-package com.delivery.project.configuration.feignClient;
-
-import com.delivery.project.dto.ShippingOrderDetailsDTO;
-import feign.Param;
-import feign.RequestLine;
-
-public interface ShippingOrderDetailsClient {
-
-    @RequestLine("GET /shippingOrders/{orderId}")
-    ShippingOrderDetailsDTO getOrderDetails(@Param("orderId") String orderId);
-}
+//package com.delivery.project.configuration.feignClient;
+//
+//import com.delivery.project.dto.ShippingOrderDetailsDTO;
+//import feign.Param;
+//import feign.RequestLine;
+//import org.springframework.web.bind.annotation.GetMapping;
+//import org.springframework.web.bind.annotation.PathVariable;
+//
+//public interface ShippingOrderDetailsClient {
+//
+//
+//}

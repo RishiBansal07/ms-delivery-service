@@ -16,7 +16,7 @@ public class SenderDetails {
     private Long id;
 
     @NotNull
-    @Column(unique=true)
+    //@Column(unique=true)
     private String employeeId;
 
     @NotNull

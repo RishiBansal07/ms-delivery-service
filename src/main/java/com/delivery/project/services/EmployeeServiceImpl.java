@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -17,6 +19,11 @@ public class EmployeeServiceImpl implements EmployeeService{
     @Override
     public void saveEmployeeDetails(EmployeeDetails employeeDetails) {
         employeeRepository.save(employeeDetails);
+    }
+
+    @Override
+    public List<EmployeeDetails> getListOfEmployee() {
+        return employeeRepository.findAll();
     }
 
     @Override
