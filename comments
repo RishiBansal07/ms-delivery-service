@@ -8,3 +8,6 @@ import org.springframework.context.annotation.Configuration;
 public class FeignClientConfig {
     // Additional configuration if needed
 }
+
+
+The bean 'shipping-order-service.FeignClientSpecification' could not be registered. A bean with that name has already been defined and overriding is disabled.
