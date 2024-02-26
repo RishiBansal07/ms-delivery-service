@@ -1,1 +1,10 @@
 Error creating bean with name 'com.delivery.project.configuration.feignClient.ShippingOrderClient': FactoryBean threw exception on object creation
+
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@EnableFeignClients(basePackages = "com.delivery.project.configuration.feignClient")
+public class FeignClientConfig {
+    // Additional configuration if needed
+}
