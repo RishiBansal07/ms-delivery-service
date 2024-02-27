@@ -9,6 +9,6 @@ import java.util.List;
 public interface EmployeeRepository extends JpaRepository<EmployeeDetails, Long> {
 
     @Query("SELECT e from EmployeeDetails e where e.employeeId = :employeeId")
-    EmployeeDetails searchByEmployeeId(String employeeId);
+    EmployeeDetails searchByEmployeeId(Long employeeId);
 
 }

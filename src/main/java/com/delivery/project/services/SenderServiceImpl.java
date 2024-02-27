@@ -2,6 +2,7 @@ package com.delivery.project.services;
 
 import com.delivery.project.entity.SenderDetails;
 import com.delivery.project.repository.SenderRepository;
+import com.delivery.project.services.interfaces.SenderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,14 +13,14 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SenderServiceImpl implements SenderService{
+public class SenderServiceImpl implements SenderService {
 
     private final SenderRepository senderRepository;
 
     @Override
-    public List<SenderDetails> searchByEmployeeId(String employeeDd) {
-        return senderRepository.searchByEmployeeId(employeeDd);    }
-
+    public List<SenderDetails> searchByEmployeeId(Long employeeDd) {
+        return senderRepository.searchByEmployeeId(employeeDd);
+    }
     /**
      * @param id
      * @return
@@ -31,7 +32,7 @@ public class SenderServiceImpl implements SenderService{
 
 
     @Override
-    public String updateOrderId(String employeeIdSender, String orderId) {
+    public Long updateOrderId(Long employeeIdSender, String orderId) {
         senderRepository.searchByEmployeeId(employeeIdSender);
         SenderDetails senderDetails = new SenderDetails();
         senderDetails.setEmployeeId(employeeIdSender);

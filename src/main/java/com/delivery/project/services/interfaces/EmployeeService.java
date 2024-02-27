@@ -1,4 +1,4 @@
-package com.delivery.project.services;
+package com.delivery.project.services.interfaces;
 
 import com.delivery.project.entity.EmployeeDetails;
 
@@ -8,7 +8,7 @@ public interface EmployeeService {
 
     void saveEmployeeDetails(EmployeeDetails employeeDetails);
 
-    EmployeeDetails searchByEmployeeId(String id);
+    EmployeeDetails searchByEmployeeId(Long id);
 
     List<EmployeeDetails> getListOfEmployee();
 

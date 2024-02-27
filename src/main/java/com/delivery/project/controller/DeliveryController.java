@@ -36,7 +36,7 @@ public class DeliveryController {
     }
 
     @GetMapping("/getOrderDetailsOfEmployee/{employeeId}")
-    public List<PlacedOrderDTO> getOrderDetailsOfEmployee(@PathVariable String employeeId) {
+    public List<PlacedOrderDTO> getOrderDetailsOfEmployee(@PathVariable Long employeeId) {
         return orderService.getOrderDetailsOfEmployee(employeeId);
     }
 

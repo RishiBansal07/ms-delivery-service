@@ -2,7 +2,7 @@ package com.delivery.project.services;
 
 import com.delivery.project.entity.EmployeeDetails;
 import com.delivery.project.repository.EmployeeRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.delivery.project.services.interfaces.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class EmployeeServiceImpl implements EmployeeService{
+public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
 
@@ -27,7 +27,7 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public EmployeeDetails searchByEmployeeId(String employeeDd) {
+    public EmployeeDetails searchByEmployeeId(Long employeeDd) {
         return employeeRepository.searchByEmployeeId(employeeDd);    }
 }
 
