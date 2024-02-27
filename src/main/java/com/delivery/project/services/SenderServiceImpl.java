@@ -1,6 +1,6 @@
 package com.delivery.project.services;
 
-import com.delivery.project.entity.SenderDetails;
+import com.delivery.project.entities.SenderDetails;
 import com.delivery.project.repository.SenderRepository;
 import com.delivery.project.services.interfaces.SenderService;
 import lombok.RequiredArgsConstructor;

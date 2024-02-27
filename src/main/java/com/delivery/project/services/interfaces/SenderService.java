@@ -1,7 +1,6 @@
 package com.delivery.project.services.interfaces;
 
-import com.delivery.project.entity.EmployeeDetails;
-import com.delivery.project.entity.SenderDetails;
+import com.delivery.project.entities.SenderDetails;
 
 import java.util.List;
 

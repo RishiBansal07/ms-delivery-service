@@ -1,4 +1,4 @@
-package com.delivery.project.entity;
+package com.delivery.project.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Data

@@ -4,7 +4,7 @@ package com.delivery.project.controller;
 import com.delivery.project.dto.OrderDetailDTO;
 import com.delivery.project.dto.PlacedOrderDTO;
 import com.delivery.project.dto.ShippingOrderDTO;
-import com.delivery.project.entity.EmployeeDetails;
+import com.delivery.project.entities.EmployeeDetails;
 import com.delivery.project.services.EmployeeServiceImpl;
 import com.delivery.project.services.OrderService;
 import jakarta.validation.Valid;

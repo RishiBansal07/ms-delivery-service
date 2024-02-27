@@ -41,7 +41,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({OrderServiceException.class})
-    public ResponseEntity<ErrorResponse> notFoundException(OrderServiceException ex) {
+    public ResponseEntity<ErrorResponse> orderServiceException(OrderServiceException ex) {
         if (log.isErrorEnabled()) {
             log.error("Server exception: " + ex.getMessage(), ex);
         }

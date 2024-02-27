@@ -1,6 +1,6 @@
 package com.delivery.project.repository;
 
-import com.delivery.project.entity.SenderDetails;
+import com.delivery.project.entities.SenderDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

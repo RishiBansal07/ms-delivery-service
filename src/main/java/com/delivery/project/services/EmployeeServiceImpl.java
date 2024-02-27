@@ -1,6 +1,6 @@
 package com.delivery.project.services;
 
-import com.delivery.project.entity.EmployeeDetails;
+import com.delivery.project.entities.EmployeeDetails;
 import com.delivery.project.repository.EmployeeRepository;
 import com.delivery.project.services.interfaces.EmployeeService;
 import lombok.RequiredArgsConstructor;

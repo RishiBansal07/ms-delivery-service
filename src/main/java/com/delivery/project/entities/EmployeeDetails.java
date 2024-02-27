@@ -1,4 +1,4 @@
-package com.delivery.project.entity;
+package com.delivery.project.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
