@@ -2,125 +2,124 @@ import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class OrderServiceTest {
+class EmployeeServiceImplTest {
 
-    private OrderService orderService;
-    private EmployeeService employeeService;
-    private UUIDExtractor uuidExtractor;
-    private SenderService senderService;
+    private EmployeeServiceImpl employeeService;
+    private EmployeeRepository employeeRepository;
 
     @BeforeEach
     void setUp() {
-        employeeService = mock(EmployeeService.class);
-        uuidExtractor = mock(UUIDExtractor.class);
-        senderService = mock(SenderService.class);
-        orderService = new OrderService(employeeService, uuidExtractor, senderService);
+        employeeRepository = mock(EmployeeRepository.class);
+        employeeService = new EmployeeServiceImpl(employeeRepository);
     }
 
     @Test
-    void createOrderDetails_ShouldCreateOrderAndInvokeDependencies() {
+    void saveEmployeeDetails_ShouldCallRepositorySave() {
         // Arrange
-        ShippingOrderDTO shippingOrder = new ShippingOrderDTO(/* shipping order details here */);
         EmployeeDetails employeeDetails = new EmployeeDetails(/* employee details here */);
-        when(employeeService.searchByEmployeeId(shippingOrder.getEmployeeIdReceiver())).thenReturn(employeeDetails);
-        when(uuidExtractor.extraction(anyString())).thenReturn("generatedOrderId");
 
         // Act
-        orderService.createOrderDetails(shippingOrder);
+        employeeService.saveEmployeeDetails(employeeDetails);
 
         // Assert
-        verify(senderService, times(1)).updateOrderId(anyLong(), eq("generatedOrderId"));
+        verify(employeeRepository, times(1)).save(employeeDetails);
     }
 
     @Test
-    void getOrderDetailsOfEmployee_ShouldReturnListOfPlacedOrderDTO() {
+    void getListOfEmployee_ShouldReturnListOfEmployeeDetails() {
+        // Arrange
+        List<EmployeeDetails> employeeDetailsList = Collections.singletonList(new EmployeeDetails(/* employee details here */));
+        when(employeeRepository.findAll()).thenReturn(employeeDetailsList);
+
+        // Act
+        List<EmployeeDetails> result = employeeService.getListOfEmployee();
+
+        // Assert
+        assertEquals(employeeDetailsList, result);
+    }
+
+    @Test
+    void searchByEmployeeId_ShouldReturnEmployeeDetails() {
         // Arrange
         Long employeeId = 123L;
-        List<SenderDetails> senderDetailsList = Collections.singletonList(new SenderDetails(/* sender details here */));
-        when(senderService.searchByEmployeeId(employeeId)).thenReturn(senderDetailsList);
-        when(orderService.getCall(anyString())).thenReturn(new PlacedOrderDTO(/* placed order details here */));
+        EmployeeDetails employeeDetails = new EmployeeDetails(/* employee details here */);
+        when(employeeRepository.searchByEmployeeId(employeeId)).thenReturn(employeeDetails);
 
         // Act
-        List<PlacedOrderDTO> result = orderService.getOrderDetailsOfEmployee(employeeId);
+        EmployeeDetails result = employeeService.searchByEmployeeId(employeeId);
 
         // Assert
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    void getOrderDetail_ShouldReturnOrderDetailDTO() {
-        // Arrange
-        String orderId = "ABC123";
-        PlacedOrderDTO placedOrderDTO = new PlacedOrderDTO(/* placed order details here */);
-        when(orderService.getCall(orderId)).thenReturn(placedOrderDTO);
-        when(senderService.searchByOrderId(orderId)).thenReturn(new SenderDetails(/* sender details here */));
-
-        // Act
-        OrderDetailDTO result = orderService.getOrderDetail(orderId);
-
-        // Assert
-        assertNotNull(result);
+        assertEquals(employeeDetails, result);
     }
 }
 
-class SenderServiceImplTest {
 
-    private SenderServiceImpl senderService;
-    private SenderRepository senderRepository;
 
-    @BeforeEach
-    void setUp() {
-        senderRepository = mock(SenderRepository.class);
-        senderService = new SenderServiceImpl(senderRepository);
+
+
+
+
+
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@ExtendWith(SpringExtension.class)
+class DeliveryControllerIntegrationTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    // Add other dependencies like EmployeeServiceImpl, OrderService, etc. using @MockBean if needed
+
+    @Test
+    void testFindAllEmployeeEndpoint() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/employees")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        // You can add more assertions based on the expected response
     }
 
     @Test
-    void searchByEmployeeId_ShouldReturnSenderDetailsList() {
-        // Arrange
-        Long employeeId = 123L;
-        when(senderRepository.searchByEmployeeId(employeeId)).thenReturn(Collections.singletonList(new SenderDetails(/* sender details here */)));
+    void testOrderPackageEndpoint() throws Exception {
+        // You need to construct a valid ShippingOrderDTO as JSON for the request body
+        String shippingOrderJson = "{\"employeeIdReceiver\": 123, \"nameOfThePackage\": \"Test Package\", \"weightOfThePackage\": 5.0}";
 
-        // Act
-        List<SenderDetails> result = senderService.searchByEmployeeId(employeeId);
-
-        // Assert
-        assertEquals(1, result.size());
+        mockMvc.perform(MockMvcRequestBuilders.post("/orderPackage")
+                .content(shippingOrderJson)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+        // You can add more assertions based on the expected response
     }
 
     @Test
-    void searchByOrderId_ShouldReturnSenderDetails() {
-        // Arrange
-        String orderId = "ABC123";
-        when(senderRepository.searchByOrderId(orderId)).thenReturn(new SenderDetails(/* sender details here */));
-
-        // Act
-        SenderDetails result = senderService.searchByOrderId(orderId);
-
-        // Assert
-        assertNotNull(result);
+    void testGetOrderDetailsOfEmployeeEndpoint() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/getOrderDetailsOfEmployee/{employeeId}", 123)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        // You can add more assertions based on the expected response
     }
 
     @Test
-    void updateOrderId_ShouldUpdateOrderIdAndSave() {
-        // Arrange
-        Long employeeIdSender = 123L;
-        String orderId = "ABC123";
-        when(senderRepository.searchByEmployeeId(employeeIdSender)).thenReturn(new ArrayList<>());
-
-        // Act
-        Long result = senderService.updateOrderId(employeeIdSender, orderId);
-
-        // Assert
-        assertEquals(employeeIdSender, result);
+    void testGetOrderDetailsEndpoint() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/getOrderDetails/{orderId}", "ABC123")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        // You can add more assertions based on the expected response
     }
 }
