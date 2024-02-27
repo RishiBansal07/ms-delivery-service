@@ -2,75 +2,125 @@ import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class DeliveryControllerTest {
+class OrderServiceTest {
 
-    private DeliveryController deliveryController;
-    private EmployeeServiceImpl employeeService;
     private OrderService orderService;
+    private EmployeeService employeeService;
+    private UUIDExtractor uuidExtractor;
+    private SenderService senderService;
 
     @BeforeEach
     void setUp() {
-        employeeService = mock(EmployeeServiceImpl.class);
-        orderService = mock(OrderService.class);
-        deliveryController = new DeliveryController(employeeService, orderService);
+        employeeService = mock(EmployeeService.class);
+        uuidExtractor = mock(UUIDExtractor.class);
+        senderService = mock(SenderService.class);
+        orderService = new OrderService(employeeService, uuidExtractor, senderService);
     }
 
     @Test
-    void findAllEmployee_ShouldReturnListOfEmployeeDetails() {
-        // Arrange
-        List<EmployeeDetails> employeeDetailsList = Collections.singletonList(new EmployeeDetails(/* employee details here */));
-        when(employeeService.getListOfEmployee()).thenReturn(employeeDetailsList);
-
-        // Act
-        List<EmployeeDetails> result = deliveryController.findAllEmployee();
-
-        // Assert
-        assertEquals(employeeDetailsList, result);
-    }
-
-    @Test
-    void orderPackage_ShouldCreateOrderDetails() {
+    void createOrderDetails_ShouldCreateOrderAndInvokeDependencies() {
         // Arrange
         ShippingOrderDTO shippingOrder = new ShippingOrderDTO(/* shipping order details here */);
+        EmployeeDetails employeeDetails = new EmployeeDetails(/* employee details here */);
+        when(employeeService.searchByEmployeeId(shippingOrder.getEmployeeIdReceiver())).thenReturn(employeeDetails);
+        when(uuidExtractor.extraction(anyString())).thenReturn("generatedOrderId");
 
         // Act
-        deliveryController.orderPackage(shippingOrder);
+        orderService.createOrderDetails(shippingOrder);
 
         // Assert
-        verify(orderService, times(1)).createOrderDetails(shippingOrder);
+        verify(senderService, times(1)).updateOrderId(anyLong(), eq("generatedOrderId"));
     }
 
     @Test
     void getOrderDetailsOfEmployee_ShouldReturnListOfPlacedOrderDTO() {
         // Arrange
         Long employeeId = 123L;
-        List<PlacedOrderDTO> placedOrderDTOList = Collections.singletonList(new PlacedOrderDTO(/* order details here */));
-        when(orderService.getOrderDetailsOfEmployee(employeeId)).thenReturn(placedOrderDTOList);
+        List<SenderDetails> senderDetailsList = Collections.singletonList(new SenderDetails(/* sender details here */));
+        when(senderService.searchByEmployeeId(employeeId)).thenReturn(senderDetailsList);
+        when(orderService.getCall(anyString())).thenReturn(new PlacedOrderDTO(/* placed order details here */));
 
         // Act
-        List<PlacedOrderDTO> result = deliveryController.getOrderDetailsOfEmployee(employeeId);
+        List<PlacedOrderDTO> result = orderService.getOrderDetailsOfEmployee(employeeId);
 
         // Assert
-        assertEquals(placedOrderDTOList, result);
+        assertEquals(1, result.size());
     }
 
     @Test
-    void getOrderDetails_ShouldReturnOrderDetailDTO() {
+    void getOrderDetail_ShouldReturnOrderDetailDTO() {
         // Arrange
         String orderId = "ABC123";
-        OrderDetailDTO orderDetailDTO = new OrderDetailDTO(/* order details here */);
-        when(orderService.getOrderDetail(orderId)).thenReturn(orderDetailDTO);
+        PlacedOrderDTO placedOrderDTO = new PlacedOrderDTO(/* placed order details here */);
+        when(orderService.getCall(orderId)).thenReturn(placedOrderDTO);
+        when(senderService.searchByOrderId(orderId)).thenReturn(new SenderDetails(/* sender details here */));
 
         // Act
-        OrderDetailDTO result = deliveryController.getOrderDetails(orderId);
+        OrderDetailDTO result = orderService.getOrderDetail(orderId);
 
         // Assert
-        assertEquals(orderDetailDTO, result);
+        assertNotNull(result);
+    }
+}
+
+class SenderServiceImplTest {
+
+    private SenderServiceImpl senderService;
+    private SenderRepository senderRepository;
+
+    @BeforeEach
+    void setUp() {
+        senderRepository = mock(SenderRepository.class);
+        senderService = new SenderServiceImpl(senderRepository);
+    }
+
+    @Test
+    void searchByEmployeeId_ShouldReturnSenderDetailsList() {
+        // Arrange
+        Long employeeId = 123L;
+        when(senderRepository.searchByEmployeeId(employeeId)).thenReturn(Collections.singletonList(new SenderDetails(/* sender details here */)));
+
+        // Act
+        List<SenderDetails> result = senderService.searchByEmployeeId(employeeId);
+
+        // Assert
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void searchByOrderId_ShouldReturnSenderDetails() {
+        // Arrange
+        String orderId = "ABC123";
+        when(senderRepository.searchByOrderId(orderId)).thenReturn(new SenderDetails(/* sender details here */));
+
+        // Act
+        SenderDetails result = senderService.searchByOrderId(orderId);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void updateOrderId_ShouldUpdateOrderIdAndSave() {
+        // Arrange
+        Long employeeIdSender = 123L;
+        String orderId = "ABC123";
+        when(senderRepository.searchByEmployeeId(employeeIdSender)).thenReturn(new ArrayList<>());
+
+        // Act
+        Long result = senderService.updateOrderId(employeeIdSender, orderId);
+
+        // Assert
+        assertEquals(employeeIdSender, result);
     }
 }
