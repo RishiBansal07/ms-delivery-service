@@ -3,7 +3,7 @@ package com.delivery.project.dto;
 import lombok.Data;
 
 @Data
-public class PlacedOrder {
+public class PlacedOrderDTO {
 
 private String packageId;
 private String packageName;

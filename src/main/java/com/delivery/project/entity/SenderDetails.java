@@ -7,6 +7,9 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 public class SenderDetails {
@@ -16,10 +19,12 @@ public class SenderDetails {
     private Long id;
 
     @NotNull
-    //@Column(unique=true)
     private String employeeId;
 
     @NotNull
+    @Column(unique=true)
     private String orderIdOfPackage;
+
+    private LocalDate packageRegisteredDate;
 
 }

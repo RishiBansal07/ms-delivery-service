@@ -14,7 +14,7 @@ public class EmployeeDetails {
 
     @NotNull
     @Column(unique=true)
-    private String employeeId;
+    private Long employeeId;
 
     @NotNull
     private String employeeName;

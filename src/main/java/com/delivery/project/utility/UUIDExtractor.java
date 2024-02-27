@@ -1,4 +1,4 @@
-package com.delivery.project.Utility;
+package com.delivery.project.utility;
 
 import org.springframework.stereotype.Component;
 
