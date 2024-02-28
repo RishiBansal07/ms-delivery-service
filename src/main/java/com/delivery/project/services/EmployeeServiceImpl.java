@@ -13,22 +13,35 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
-
     private final EmployeeRepository employeeRepository;
 
+    /**
+     *
+     * @param employeeDetails
+     */
     @Override
     public void saveEmployeeDetails(EmployeeDetails employeeDetails) {
         employeeRepository.save(employeeDetails);
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<EmployeeDetails> getListOfEmployee() {
         return employeeRepository.findAll();
     }
 
+    /**
+     *
+     * @param employeeDd
+     * @return
+     */
     @Override
     public EmployeeDetails searchByEmployeeId(Long employeeDd) {
-        return employeeRepository.searchByEmployeeId(employeeDd);    }
+        return employeeRepository.searchByEmployeeId(employeeDd);
+    }
 }
 
 

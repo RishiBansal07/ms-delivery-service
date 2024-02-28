@@ -13,10 +13,8 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .components(new Components())
-                .info(new Info().title("Recipe API").description(
-                        "This project basically allows users to manage their favorite recipes. It should allow adding, \n" +
-                                "updating, removing, and fetching recipes. Additionally, users should be able to filter available recipes \n" +
-                                "based on specific criteria,\n" +
-                                "Insert new details, Delete the existing ones (CRUD operations)"));
+                .info(new Info().title("Delivery Service").description(
+                        "This project basically allows bank employees to place a order without sharing the address details about it.\n" +
+                                "Further employee can verify the order placed as well"));
     }
 }

@@ -17,12 +17,19 @@ public class SenderServiceImpl implements SenderService {
 
     private final SenderRepository senderRepository;
 
+    /**
+     *
+     * @param employeeDd
+     * @return
+     */
     @Override
     public List<SenderDetails> searchByEmployeeId(Long employeeDd) {
         return senderRepository.searchByEmployeeId(employeeDd);
     }
+
     /**
-     * @param id
+     *
+     * @param orderId
      * @return
      */
     @Override
@@ -30,7 +37,12 @@ public class SenderServiceImpl implements SenderService {
         return senderRepository.searchByOrderId(orderId);
     }
 
-
+    /**
+     *
+     * @param employeeIdSender
+     * @param orderId
+     * @return
+     */
     @Override
     public Long updateOrderId(Long employeeIdSender, String orderId) {
         senderRepository.searchByEmployeeId(employeeIdSender);

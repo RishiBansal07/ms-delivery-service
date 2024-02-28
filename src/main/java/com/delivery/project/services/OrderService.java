@@ -10,6 +10,7 @@ import com.delivery.project.exceptions.OrderServiceException;
 import com.delivery.project.services.interfaces.EmployeeService;
 import com.delivery.project.services.interfaces.SenderService;
 import com.delivery.project.utility.UUIDExtractor;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@AllArgsConstructor
 public class OrderService {
 
     @Autowired
@@ -33,8 +35,11 @@ public class OrderService {
     @Autowired
     private SenderService senderService;
 
+    /**
+     *
+     * @param shippingOrder
+     */
     public void createOrderDetails(ShippingOrderDTO shippingOrder) {
-
         EmployeeDetails employeeDetails = employeeService.searchByEmployeeId(shippingOrder.getEmployeeIdReceiver());
         Order order = new Order();
         order.setPackageName(shippingOrder.getNameOfThePackage());
@@ -42,13 +47,16 @@ public class OrderService {
         order.setPostalCode(employeeDetails.getPostalCode());
         order.setStreetName(employeeDetails.getStreetName());
         order.setReceiverName(employeeDetails.getEmployeeName());
-
         String orderIdHeader = postCall(order);
         String orderId = uuidExtractor.extraction(orderIdHeader);
-
         senderService.updateOrderId(shippingOrder.getEmployeeIdSender(), orderId);
     }
 
+    /**
+     *
+     * @param weightOfThePackage
+     * @return
+     */
     private String convertWeightToSize(BigDecimal weightOfThePackage) {
         if (weightOfThePackage.compareTo(BigDecimal.valueOf(2000)) <= 0) {
             return "S";
@@ -56,12 +64,17 @@ public class OrderService {
             return "M";
         } else if (weightOfThePackage.compareTo(BigDecimal.valueOf(10000)) <= 0) {
             return "L";
-        } else if(weightOfThePackage.compareTo(BigDecimal.ZERO)<0){
+        } else if (weightOfThePackage.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Value must be positive");
         }
         return "XL";
     }
 
+    /**
+     *
+     * @param order
+     * @return
+     */
     private String postCall(Order order) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -76,7 +89,12 @@ public class OrderService {
         return orderIdHeader;
     }
 
-    public List<PlacedOrderDTO> getOrderDetailsOfEmployee(Long employeeId) {
+    /**
+     *
+     * @param employeeId
+     * @return
+     */
+    public List<PlacedOrderDTO> getAllTheOrderDetailsPlacedByEmployee(Long employeeId) {
         List<SenderDetails> senderDetailsList = senderService.searchByEmployeeId(employeeId);
         List<PlacedOrderDTO> placedOrderDTOList = new ArrayList<>();
         for (SenderDetails i : senderDetailsList) {
@@ -85,6 +103,11 @@ public class OrderService {
         return placedOrderDTOList;
     }
 
+    /**
+     *
+     * @param orderId
+     * @return
+     */
     public OrderDetailDTO getOrderDetail(String orderId) {
         PlacedOrderDTO placedOrderDTO = getCall(orderId);
         OrderDetailDTO orderDetailDTO = new OrderDetailDTO();
@@ -96,12 +119,22 @@ public class OrderService {
         return orderDetailDTO;
     }
 
+    /**
+     *
+     * @param orderId
+     * @return
+     */
     private String getDateOfRegistration(String orderId) {
         SenderDetails senderDetails = senderService.searchByOrderId(orderId);
         return senderDetails.getPackageRegisteredDate().toString();
     }
 
-    private PlacedOrderDTO getCall(String orderId) {
+    /**
+     *
+     * @param orderId
+     * @return
+     */
+    public PlacedOrderDTO getCall(String orderId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
