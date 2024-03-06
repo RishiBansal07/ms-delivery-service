@@ -1,0 +1,100 @@
+package com.delivery.project.feign;
+
+import com.delivery.project.dto.Order;
+import com.delivery.project.dto.PlacedOrderDTO;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+@FeignClient(name = "shippingOrderClient", url = "http://localhost:8443")
+public interface ShippingOrderFeignClient {
+
+    @PostMapping(value = "/shippingOrders", consumes = MediaType.APPLICATION_JSON_VALUE)
+    String postOrder(@RequestBody Order order);
+
+    @GetMapping("/shippingOrders/{orderId}")
+    PlacedOrderDTO getOrder(@PathVariable String orderId);
+}
+
+
+package com.delivery.project.services;
+
+import com.delivery.project.dto.Order;
+import com.delivery.project.dto.OrderDetailDTO;
+import com.delivery.project.dto.PlacedOrderDTO;
+import com.delivery.project.dto.ShippingOrderDTO;
+import com.delivery.project.entities.EmployeeDetails;
+import com.delivery.project.entities.SenderDetails;
+import com.delivery.project.exceptions.OrderServiceException;
+import com.delivery.project.feign.ShippingOrderFeignClient;
+import com.delivery.project.services.interfaces.EmployeeService;
+import com.delivery.project.services.interfaces.SenderService;
+import com.delivery.project.utility.UUIDExtractor;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+@AllArgsConstructor
+public class OrderService {
+
+    @Autowired
+    private EmployeeService employeeService;
+    @Autowired
+    private UUIDExtractor uuidExtractor;
+    @Autowired
+    private SenderService senderService;
+    @Autowired
+    private ShippingOrderFeignClient shippingOrderFeignClient;
+
+    public void createOrderDetails(ShippingOrderDTO shippingOrder) {
+        EmployeeDetails employeeDetails = employeeService.searchByEmployeeId(shippingOrder.getEmployeeIdReceiver());
+        Order order = new Order();
+        order.setPackageName(shippingOrder.getNameOfThePackage());
+        order.setPackageSize(convertWeightToSize(shippingOrder.getWeightOfThePackage()));
+        order.setPostalCode(employeeDetails.getPostalCode());
+        order.setStreetName(employeeDetails.getStreetName());
+        order.setReceiverName(employeeDetails.getEmployeeName());
+        String orderIdHeader = shippingOrderFeignClient.postOrder(order);
+        String orderId = uuidExtractor.extraction(orderIdHeader);
+        senderService.updateOrderId(shippingOrder.getEmployeeIdSender(), orderId);
+    }
+
+    private String convertWeightToSize(BigDecimal weightOfThePackage) {
+        // Implementation remains the same
+    }
+
+    public List<PlacedOrderDTO> getAllTheOrderDetailsPlacedByEmployee(Long employeeId) {
+        List<SenderDetails> senderDetailsList = senderService.searchByEmployeeId(employeeId);
+        List<PlacedOrderDTO> placedOrderDTOList = new ArrayList<>();
+        for (SenderDetails i : senderDetailsList) {
+            placedOrderDTOList.add(shippingOrderFeignClient.getOrder(i.getOrderIdOfPackage()));
+        }
+        return placedOrderDTOList;
+    }
+
+    public OrderDetailDTO getOrderDetail(String orderId) {
+        PlacedOrderDTO placedOrderDTO = shippingOrderFeignClient.getOrder(orderId);
+        OrderDetailDTO orderDetailDTO = new OrderDetailDTO();
+        orderDetailDTO.setDateOfRegistration(getDateOfRegistration(orderId));
+        orderDetailDTO.setPackageStatus(placedOrderDTO.getOrderStatus());
+        if ("DELIVERED".equals(placedOrderDTO.getOrderStatus())) {
+            orderDetailDTO.setDateOfReceipt(placedOrderDTO.getActualDeliveryDateTime());
+        }
+        return orderDetailDTO;
+    }
+
+    private String getDateOfRegistration(String orderId) {
+        SenderDetails senderDetails = senderService.searchByOrderId(orderId);
+        return senderDetails.getPackageRegisteredDate().toString();
+    }
+}
